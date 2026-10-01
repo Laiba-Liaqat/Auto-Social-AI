@@ -1,0 +1,16 @@
+# AutoSocial AI - Open-Source Python Dependencies
+# Challenge: Best Open-Source AI Project
+# Core runtime: Python 3.10+ with local Ollama / Open-Weights
+
+streamlit>=1.38.0
+ollama>=0.3.3
+pillow>=10.4.0
+pandas>=2.2.2
+requests>=2.32.3
+textstat>=0.7.4
+python-dateutil>=2.9.0
+icalendar>=5.0.13
+pydantic>=2.8.2
+pytest>=8.3.2
+black>=24.8.0
+flake8>=7.1.1

@@ -1,0 +1,6 @@
+{
+  "name": "AutoSocial AI",
+  "description": "100% open-weight AI copilot & agent powered by LLaMA 3.2, Qwen2-VL, and Whisper for multimodal post generation, event drafting, comment triage, and calendar scheduling.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
