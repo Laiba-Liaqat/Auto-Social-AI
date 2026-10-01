@@ -1,0 +1,65 @@
+name: AutoSocial AI CI/CD Pipeline
+
+on:
+  push:
+    branches: [ main, master ]
+  pull_request:
+    branches: [ main, master ]
+
+jobs:
+  test-and-lint:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        python-version: ["3.10", "3.11", "3.12"]
+
+    steps:
+    - name: Checkout Repository
+      uses: actions/checkout@v4
+
+    - name: Set up Python ${{ matrix.python-version }}
+      uses: actions/setup-python@v5
+      with:
+        python-version: ${{ matrix.python-version }}
+        cache: 'pip'
+
+    - name: Install Dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install -r requirements.txt
+
+    - name: Lint Code with Flake8
+      run: |
+        # Stop build if there are Python syntax errors or undefined names
+        flake8 . --count --select=E9,F63,F7,F82 --show-source --statistics
+        # Exit-zero treats all errors as warnings
+        flake8 . --count --exit-zero --max-complexity=10 --max-line-length=127 --statistics
+
+    - name: Validate Agent Skill Standard Compliance
+      run: |
+        python -c "
+        import os, yaml
+        skill_path = '.agents/skills/autosocial-skill/SKILL.md'
+        assert os.path.exists(skill_path), f'Skill file not found at {skill_path}'
+        with open(skill_path, 'r', encoding='utf-8') as f:
+            content = f.read()
+        assert content.startswith('---'), 'Skill must start with YAML frontmatter'
+        parts = content.split('---', 2)
+        assert len(parts) >= 3, 'Invalid YAML frontmatter delimitation'
+        data = yaml.safe_load(parts[1])
+        assert 'name' in data and data['name'] == 'autosocial-skill', 'Skill name missing or invalid'
+        assert 'description' in data and len(data['description']) > 20, 'Skill description too short'
+        print('✅ Agent Skill Standard Compliance Passed!')
+        "
+
+    - name: Execute Offline Analytics & AI Engine Tests
+      run: |
+        python -c "
+        import ai_engine
+        metrics = ai_engine.predict_offline_metrics('Test caption with #AI #OpenSource 🚀')
+        assert metrics['hashtag_count'] == 2, 'Hashtag counter mismatch'
+        assert metrics['char_count'] > 0, 'Char count failure'
+        posts = ai_engine.generate_social_posts(None, 'Testing open weights', 'Professional')
+        assert 'instagram' in posts and 'linkedin' in posts and 'twitter' in posts
+        print('✅ Engine Unit Verification Passed!')
+        "
